@@ -30,20 +30,15 @@ def login(account):
     authorization, x_app_init_data = account
     url = 'https://cms-tg.nomis.cc/api/ton-twa-users/auth/'
     headers = {
-        ':authority': 'cms-tg.nomis.cc',
-        ':method': 'POST',
-        ':path': '/api/ton-twa-users/auth/',
-        ':scheme': 'https',
         'Accept': 'application/json, text/plain, */*',
-        'Accept-Encoding': 'gzip, deflate, br, zstd',
+        'Accept-Encoding': 'gzip, deflate, br',
         'Accept-Language': 'en-GB,en;q=0.9,en-US;q=0.8',
         'Authorization': authorization,
         'Cache-Control': 'no-cache',
-        'Content-Length': '82',
+        'Content-Length': '82',  # Content-Length is usually not needed as requests handles this automatically
         'Content-Type': 'application/json',
         'Origin': 'https://telegram.nomis.cc',
         'Pragma': 'no-cache',
-        'Priority': 'u=1, i',
         'Referer': 'https://telegram.nomis.cc/',
         'Sec-Ch-Ua': '"Not/A)Brand";v="8", "Chromium";v="126", "Microsoft Edge";v="126", "Microsoft Edge WebView2";v="126"',
         'Sec-Ch-Ua-Mobile': '?0',
@@ -80,20 +75,15 @@ def login(account):
 def claim(user_id, authorization, x_app_init_data):
     url = 'https://cms-tg.nomis.cc/api/ton-twa-users/start-farm'
     headers = {
-        ':authority': 'cms-tg.nomis.cc',
-        ':method': 'POST',
-        ':path': '/api/ton-twa-users/start-farm',
-        ':scheme': 'https',
         'Accept': 'application/json, text/plain, */*',
-        'Accept-Encoding': 'gzip, deflate, br, zstd',
+        'Accept-Encoding': 'gzip, deflate, br',
         'Accept-Language': 'en-GB,en;q=0.9,en-US;q=0.8',
         'Authorization': authorization,
         'Cache-Control': 'no-cache',
-        'Content-Length': '19',
+        'Content-Length': '19',  # Content-Length is usually not needed as requests handles this automatically
         'Content-Type': 'application/json',
         'Origin': 'https://telegram.nomis.cc',
         'Pragma': 'no-cache',
-        'Priority': 'u=1, i',
         'Referer': 'https://telegram.nomis.cc/',
         'Sec-Ch-Ua': '"Not/A)Brand";v="8", "Chromium";v="126", "Microsoft Edge";v="126", "Microsoft Edge WebView2";v="126"',
         'Sec-Ch-Ua-Mobile': '?0',
