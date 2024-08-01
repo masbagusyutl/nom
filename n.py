@@ -62,7 +62,9 @@ def claim(user_id):
     url = 'https://cms-tg.nomis.cc/api/ton-twa-users/claim/'
     headers = {
         'Accept': 'application/json, text/plain, */*',
-        'Content-Type': 'application/json'
+        'Authorization': authorization,
+        'Content-Type': 'application/json',
+        'X-App-Init-Data': x_app_init_data,
     }
     payload = {
         "user_id": user_id
