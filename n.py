@@ -3,7 +3,7 @@ import time
 import json
 from datetime import datetime, timedelta
 import sys
-import re
+import urllib.parse
 
 def load_account_data(filename):
     accounts = []
@@ -16,13 +16,14 @@ def load_account_data(filename):
     return accounts
 
 def extract_telegram_info(x_app_init_data):
-    # Menemukan ID dan username menggunakan regular expressions
-    user_id_match = re.search(r'"id":(\d+)', x_app_init_data)
-    username_match = re.search(r'"username":"([^"]+)"', x_app_init_data)
-    
-    if user_id_match and username_match:
-        telegram_user_id = user_id_match.group(1)
-        telegram_username = username_match.group(1)
+    # Mendecode URL-encoded string
+    decoded_data = urllib.parse.unquote(x_app_init_data)
+    # Menemukan bagian JSON dari data yang sudah didecode
+    json_data = re.search(r'user=({.*?})', decoded_data)
+    if json_data:
+        user_info = json.loads(json_data.group(1))
+        telegram_user_id = str(user_info.get('id', ''))
+        telegram_username = user_info.get('username', '')
         return telegram_user_id, telegram_username
     else:
         raise ValueError("Data tidak sesuai format yang diharapkan")
@@ -38,7 +39,11 @@ def login(account):
     }
     
     # Mengextract informasi dari x_app_init_data
-    telegram_user_id, telegram_username = extract_telegram_info(x_app_init_data)
+    try:
+        telegram_user_id, telegram_username = extract_telegram_info(x_app_init_data)
+    except ValueError as e:
+        print(f"Error extracting data for account with Authorization: {authorization}. {e}")
+        return None
     
     payload = {
         "telegram_user_id": telegram_user_id,
@@ -49,7 +54,7 @@ def login(account):
     response = requests.post(url, headers=headers, json=payload)
     if response.status_code == 200:
         data = response.json()
-        user_id = data['id']
+        user_id = data.get('id')
         return user_id
     else:
         print(f"Login failed for account with Authorization: {authorization}")
