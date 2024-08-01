@@ -52,21 +52,14 @@ def login(account):
         print(f"Day Streak: {data.get('dayStreak')}")
         print(f"Wallet: {data.get('wallet')}")
         print(f"Points: {data.get('points')}")
-        return user_id
+        return user_id, headers
     else:
         print(f"Login failed for account with Authorization: {authorization}")
         print(f"Response: {response.text}")
-        return None
+        return None, headers
 
-def claim(user_id):
-    authorization, x_app_init_data = account
+def claim(user_id, headers):
     url = 'https://cms-tg.nomis.cc/api/ton-twa-users/claim/'
-    headers = {
-        'Accept': 'application/json, text/plain, */*',
-        'Authorization': authorization,
-        'Content-Type': 'application/json',
-        'X-App-Init-Data': x_app_init_data,
-    }
     payload = {
         "user_id": user_id
     }
@@ -75,6 +68,7 @@ def claim(user_id):
         print(f"Claim successful for user_id: {user_id}")
     else:
         print(f"Claim failed for user_id: {user_id}")
+        print(f"Response: {response.text}")
 
 def countdown_timer(duration):
     end_time = datetime.now() + timedelta(seconds=duration)
@@ -92,9 +86,9 @@ def main():
 
     for index, account in enumerate(accounts):
         print(f"Processing account {index + 1}/{num_accounts}")
-        user_id = login(account)
+        user_id, headers = login(account)
         if user_id:
-            claim(user_id)
+            claim(user_id, headers)
         time.sleep(5)  # wait for 5 seconds before processing the next account
 
     print("All accounts processed. Starting 8-hour countdown...")
