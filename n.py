@@ -59,6 +59,7 @@ def login(account):
         return None
 
 def claim(user_id):
+    authorization, x_app_init_data = account
     url = 'https://cms-tg.nomis.cc/api/ton-twa-users/claim/'
     headers = {
         'Accept': 'application/json, text/plain, */*',
