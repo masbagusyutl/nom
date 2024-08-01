@@ -30,10 +30,29 @@ def login(account):
     authorization, x_app_init_data = account
     url = 'https://cms-tg.nomis.cc/api/ton-twa-users/auth/'
     headers = {
+        ':authority': 'cms-tg.nomis.cc',
+        ':method': 'POST',
+        ':path': '/api/ton-twa-users/auth/',
+        ':scheme': 'https',
         'Accept': 'application/json, text/plain, */*',
+        'Accept-Encoding': 'gzip, deflate, br, zstd',
+        'Accept-Language': 'en-GB,en;q=0.9,en-US;q=0.8',
         'Authorization': authorization,
+        'Cache-Control': 'no-cache',
+        'Content-Length': '82',
         'Content-Type': 'application/json',
-        'X-App-Init-Data': x_app_init_data,
+        'Origin': 'https://telegram.nomis.cc',
+        'Pragma': 'no-cache',
+        'Priority': 'u=1, i',
+        'Referer': 'https://telegram.nomis.cc/',
+        'Sec-Ch-Ua': '"Not/A)Brand";v="8", "Chromium";v="126", "Microsoft Edge";v="126", "Microsoft Edge WebView2";v="126"',
+        'Sec-Ch-Ua-Mobile': '?0',
+        'Sec-Ch-Ua-Platform': '"Windows"',
+        'Sec-Fetch-Dest': 'empty',
+        'Sec-Fetch-Mode': 'cors',
+        'Sec-Fetch-Site': 'same-site',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0',
+        'X-App-Init-Data': x_app_init_data
     }
     telegram_user_id, telegram_username = extract_telegram_info(x_app_init_data)
     payload = {
@@ -52,14 +71,39 @@ def login(account):
         print(f"Day Streak: {data.get('dayStreak')}")
         print(f"Wallet: {data.get('wallet')}")
         print(f"Points: {data.get('points')}")
-        return user_id, headers
+        return user_id
     else:
         print(f"Login failed for account with Authorization: {authorization}")
         print(f"Response: {response.text}")
-        return None, headers
+        return None
 
-def claim(user_id, headers):
-    url = 'https://cms-tg.nomis.cc/api/ton-twa-users/claim/'
+def claim(user_id, authorization, x_app_init_data):
+    url = 'https://cms-tg.nomis.cc/api/ton-twa-users/start-farm'
+    headers = {
+        ':authority': 'cms-tg.nomis.cc',
+        ':method': 'POST',
+        ':path': '/api/ton-twa-users/start-farm',
+        ':scheme': 'https',
+        'Accept': 'application/json, text/plain, */*',
+        'Accept-Encoding': 'gzip, deflate, br, zstd',
+        'Accept-Language': 'en-GB,en;q=0.9,en-US;q=0.8',
+        'Authorization': authorization,
+        'Cache-Control': 'no-cache',
+        'Content-Length': '19',
+        'Content-Type': 'application/json',
+        'Origin': 'https://telegram.nomis.cc',
+        'Pragma': 'no-cache',
+        'Priority': 'u=1, i',
+        'Referer': 'https://telegram.nomis.cc/',
+        'Sec-Ch-Ua': '"Not/A)Brand";v="8", "Chromium";v="126", "Microsoft Edge";v="126", "Microsoft Edge WebView2";v="126"',
+        'Sec-Ch-Ua-Mobile': '?0',
+        'Sec-Ch-Ua-Platform': '"Windows"',
+        'Sec-Fetch-Dest': 'empty',
+        'Sec-Fetch-Mode': 'cors',
+        'Sec-Fetch-Site': 'same-site',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0',
+        'X-App-Init-Data': x_app_init_data
+    }
     payload = {
         "user_id": user_id
     }
@@ -86,9 +130,9 @@ def main():
 
     for index, account in enumerate(accounts):
         print(f"Processing account {index + 1}/{num_accounts}")
-        user_id, headers = login(account)
+        user_id = login(account)
         if user_id:
-            claim(user_id, headers)
+            claim(user_id, account[0], account[1])
         time.sleep(5)  # wait for 5 seconds before processing the next account
 
     print("All accounts processed. Starting 8-hour countdown...")
