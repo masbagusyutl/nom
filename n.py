@@ -56,9 +56,8 @@ def login(account):
         "referrer": ""
     }
     response = requests.post(url, headers=headers, json=payload)
-    if response.status_code == 200:
+    try:
         data = response.json()
-        user_id = data.get('id')
         print(f"Login successful for {telegram_username}.")
         print(f"Response details:")
         print(f"Telegram Username: {data.get('telegramUsername')}")
@@ -66,10 +65,10 @@ def login(account):
         print(f"Day Streak: {data.get('dayStreak')}")
         print(f"Wallet: {data.get('wallet')}")
         print(f"Points: {data.get('points')}")
-        return user_id
-    else:
-        print(f"Login failed for account with Authorization: {authorization}")
-        print(f"Response: {response.text}")
+        return data.get('id')
+    except json.JSONDecodeError:
+        print(f"Failed to decode JSON response for account with Authorization: {authorization}")
+        print(f"Response content: {response.text}")
         return None
 
 def claim(user_id, authorization, x_app_init_data):
