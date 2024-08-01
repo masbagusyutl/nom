@@ -3,8 +3,8 @@ import time
 import json
 from datetime import datetime, timedelta
 import sys
-import urllib.parse
-import re  # Import module re for regex operations
+import re
+from urllib.parse import unquote
 
 def load_account_data(filename):
     accounts = []
@@ -17,17 +17,14 @@ def load_account_data(filename):
     return accounts
 
 def extract_telegram_info(x_app_init_data):
-    # Mendecode URL-encoded string
-    decoded_data = urllib.parse.unquote(x_app_init_data)
-    # Menemukan bagian JSON dari data yang sudah didecode
-    json_data = re.search(r'user=({.*?})', decoded_data)
-    if json_data:
-        user_info = json.loads(json_data.group(1))
-        telegram_user_id = str(user_info.get('id', ''))
-        telegram_username = user_info.get('username', '')
+    decoded_data = unquote(x_app_init_data)
+    match = re.search(r'user=({.*?})', decoded_data)
+    if match:
+        user_data = json.loads(match.group(1))
+        telegram_user_id = user_data.get('id')
+        telegram_username = user_data.get('username')
         return telegram_user_id, telegram_username
-    else:
-        raise ValueError("Data tidak sesuai format yang diharapkan")
+    return None, None
 
 def login(account):
     authorization, x_app_init_data = account
@@ -38,27 +35,27 @@ def login(account):
         'Content-Type': 'application/json',
         'X-App-Init-Data': x_app_init_data,
     }
-    
-    # Mengextract informasi dari x_app_init_data
-    try:
-        telegram_user_id, telegram_username = extract_telegram_info(x_app_init_data)
-    except ValueError as e:
-        print(f"Error extracting data for account with Authorization: {authorization}. {e}")
-        return None
-    
+    telegram_user_id, telegram_username = extract_telegram_info(x_app_init_data)
     payload = {
         "telegram_user_id": telegram_user_id,
         "telegram_username": telegram_username,
         "referrer": ""
     }
-    
     response = requests.post(url, headers=headers, json=payload)
     if response.status_code == 200:
         data = response.json()
         user_id = data.get('id')
+        print(f"Login successful for {telegram_username}.")
+        print(f"Response details:")
+        print(f"Telegram Username: {data.get('telegramUsername')}")
+        print(f"Next Farm Claim At: {data.get('nextFarmClaimAt')}")
+        print(f"Day Streak: {data.get('dayStreak')}")
+        print(f"Wallet: {data.get('wallet')}")
+        print(f"Points: {data.get('points')}")
         return user_id
     else:
         print(f"Login failed for account with Authorization: {authorization}")
+        print(f"Response: {response.text}")
         return None
 
 def claim(user_id):
