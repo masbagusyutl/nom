@@ -4,6 +4,7 @@ import json
 from datetime import datetime, timedelta
 import sys
 import urllib.parse
+import re  # Import module re for regex operations
 
 def load_account_data(filename):
     accounts = []
